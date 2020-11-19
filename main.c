@@ -2,8 +2,7 @@
 #include <string.h>
 
 //defining piece data structure
-struct piece
-{
+struct piece{
     int team;
     char* class;
 };
@@ -18,16 +17,18 @@ piece construct(int team, char* class){
 }
 // defining game board
 piece board[8][8];
+// char column[8] = {'a','b','c','d','e','f','g','h'};
+
 
 //building the pieces and place them on the board
 void initiateBoard(){
-    for (int i = 0; i < 8; i++)//build pawn red team
-    {
+    for (int i = 0; i < 8; i++){//build pawn red team
+    
         board[1][i]=construct(1,"pawn");
     }
     
-    for (int i = 0; i < 8; i++)//build pawn blue team
-    {
+    for (int i = 0; i < 8; i++){//build pawn blue team
+    
         board[6][i]=construct(2,"pawn");
     }
 
@@ -71,54 +72,59 @@ void initiateBoard(){
 
 //draw the board into the CL
 void buildBoard(){
-    
-    for (int i = 0; i < 8; i++)
-    {
+    printf("    ");
+    for (int i = 0; i < 8; i++){
+        printf("\033[36m   %c",65+i);
+    }
+
+    printf("\033[0m");
+    printf("\n");
+
+    for (int i = 0; i < 8; i++){
         printf("\n");
-        for (int j = 0; j < 8; j++)
-        {
-            if (board[i][j].team == 1)
-            {
+        printf("\033[36m   %i\033[0m",i);
+
+        for (int j = 0; j < 8; j++){
+            if (board[i][j].team == 1){
                 printf("\033[31m");
             }
-            if (board[i][j].team == 2)
-            {
+
+            if (board[i][j].team == 2){
                 printf("\033[34m");
             }
             
-            if (board[i][j].class == "pawn")
-            {
+            if (board[i][j].class == "pawn"){
                 printf("   P");
             }
-            if (board[i][j].class == "rook")
-            {
+            if (board[i][j].class == "rook"){
                 printf("   R");
             }
-            if (board[i][j].class == "knight")
-            {
+            if (board[i][j].class == "knight"){
                 printf("   N");
             }
-            if (board[i][j].class == "bishop")
-            {
+            if (board[i][j].class == "bishop"){
                 printf("   B");
             }
-            if (board[i][j].class == "queen")
-            {
+            if (board[i][j].class == "queen"){
                 printf("   Q");
             }
-            if (board[i][j].class == "king")
-            {
+            if (board[i][j].class == "king"){
                 printf("   K");
             }
-            if (board[i][j].class == NULL)
-            {
+            if (board[i][j].class == NULL){
                 printf("   X");
             }
             printf("\033[0m");
         }
+        printf("\033[36m   %i\033[0m",i);
         printf("\n");
     }
-    
+    printf("\n    ");
+    for (int i = 0; i < 8; i++){
+        printf("\033[36m   %c",65+i);
+    }
+
+    printf("\033[0m\n");
 }
 //Main function
 int main(){
