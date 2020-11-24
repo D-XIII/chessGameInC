@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 //defining piece data structure
 struct piece{
@@ -82,7 +83,7 @@ void buildBoard(){
 
     for (int i = 0; i < 8; i++){
         printf("\n");
-        printf("\033[36m   %i\033[0m",i);
+        printf("\033[36m   %i\033[0m",i+1);
 
         for (int j = 0; j < 8; j++){
             if (board[i][j].team == 1){
@@ -116,7 +117,7 @@ void buildBoard(){
             }
             printf("\033[0m");
         }
-        printf("\033[36m   %i\033[0m",i);
+        printf("\033[36m   %i\033[0m",i+1);
         printf("\n");
     }
     printf("\n    ");
@@ -126,11 +127,48 @@ void buildBoard(){
 
     printf("\033[0m\n");
 }
+
+int move(int player) {
+    char pos[3];
+    printf("Joueur %d: Entrer la position du pion que vous voulez bouger (ex: A,1): ", player);
+    scanf("%s", &pos);
+    char *ptr = strtok(pos, ",");
+    int x, y, temp, j = 0;
+    while (ptr != NULL) {
+        temp = (int)*ptr;
+        if (temp >= 97) { temp -= 32; } // a => A
+        if (temp >= 65) { temp -= 65; } // A => 0
+        if (temp >= 49) { temp -= 49; } // 1 => 0
+
+        if (j == 0) {
+            y = temp;
+        } else if (j == 1) {
+            x = temp;
+        }
+
+        ptr = strtok(NULL, ",");
+        j++;
+    }
+
+    printf("Vous avez choisi le pion %s!\n", board[x][y].class);
+    printf("%d => %d\n", player, board[x][y].team);
+    if (board[x][y].team == player) {
+        printf("c'est votre pion\n");
+    }
+    printf("X: %d - Y: %d\n", x, y);
+}
+
 //Main function
 int main(){
 
     initiateBoard();
     buildBoard();
+
+    int i = 0;
+    while(1) {
+        move((i%2)+1);
+        i++;
+    }
 
     return 0;
 }
