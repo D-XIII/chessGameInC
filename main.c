@@ -65,10 +65,6 @@ void initiateBoard(){
     board[7][4]=construct(2,"king");
 }
 
-void move(){
-    
-}
-
 //draw the board into the console
 void buildBoard(){
     printf("    ");
@@ -126,12 +122,12 @@ void buildBoard(){
     printf("\033[0m\n");
 }
 
-int move(int player) {
+piece* choosePos(){
     char pos[3];
-    printf("Joueur %d: Entrer la position du pion que vous voulez bouger (ex: A,1): ", player);
-    scanf("%s", &pos);
+    scanf("%s", &pos);//a,3
     char *ptr = strtok(pos, ",");
     int x, y, temp, j = 0;
+
     while (ptr != NULL) {
         temp = (int)*ptr;
         if (temp >= 97) { temp -= 32; } // a => A
@@ -148,12 +144,42 @@ int move(int player) {
         j++;
     }
 
-    printf("Vous avez choisi le pion %s!\n", board[x][y].class);
-    printf("%d => %d\n", player, board[x][y].team);
-    if (board[x][y].team == player) {
+    return &board[x][y];
+}
+
+void move(int player) {
+    if (player == 1){
+        printf("\033[31m");
+    }
+    else{
+        printf("\033[34m");
+    }
+    printf("Joueur %d\033[0m : Entrer la position du pion que vous voulez bouger (ex: A,1): ", player);
+
+    piece* laPiece = choosePos();
+    
+    printf("Vous avez choisi le pion %s!\n", laPiece->class);
+    printf("%d => %d\n", player, laPiece->team);
+    if (laPiece->team == player) {
         printf("c'est votre pion\n");
     }
-    printf("X: %d - Y: %d\n", x, y);
+    else
+    {
+        printf("Ce n'est pas votre pion\n");
+    }
+    if (player == 1){
+        printf("\033[31m");
+    }
+    else{
+        printf("\033[34m");
+    }
+    printf("Joueur %d\033[0m : Vers quelle position voulez vous bouger cette piece ? (ex: A,1): ", player);
+
+    piece* target = choosePos();
+    target->class = laPiece->class;
+    target->team = laPiece->team;
+    laPiece->class = NULL;
+    laPiece->team = 0;
 }
 
 //Main function
@@ -161,11 +187,13 @@ int main(){
 
     initiateBoard();
     buildBoard();
+    
 
     int i = 0;
     while(1) {
         move((i%2)+1);
         i++;
+        buildBoard();
     }
 
     return 0;
