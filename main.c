@@ -17,19 +17,14 @@ piece construct(int team, char* class){
 }
 // defining game board
 piece board[8][8];
-// char column[8] = {'a','b','c','d','e','f','g','h'};
-
 
 //building the pieces and place them on the board
 void initiateBoard(){
-    for (int i = 0; i < 8; i++){//build pawn red team
+    for (int i = 0; i < 8; i++){//build pawn for blue and red team
     
         board[1][i]=construct(1,"pawn");
-    }
-    
-    for (int i = 0; i < 8; i++){//build pawn blue team
-    
         board[6][i]=construct(2,"pawn");
+
     }
 
     //build rook for red team
@@ -69,8 +64,11 @@ void initiateBoard(){
     board[7][4]=construct(2,"king");
 }
 
+void move(){
+    
+}
 
-//draw the board into the CL
+//draw the board into the console
 void buildBoard(){
     printf("    ");
     for (int i = 0; i < 8; i++){
