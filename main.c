@@ -77,7 +77,7 @@ void buildBoard(){
 
     for (int i = 0; i < 8; i++){
         printf("\n");
-        printf("\033[36m   %i\033[0m",i+1);
+        printf("\033[36m   %i\033[0m",8-i);
 
         for (int j = 0; j < 8; j++){
             if (board[i][j].team == 1){
@@ -111,7 +111,7 @@ void buildBoard(){
             }
             printf("\033[0m");
         }
-        printf("\033[36m   %i\033[0m",i+1);
+        printf("\033[36m   %i\033[0m",8-i);
         printf("\n");
     }
     printf("\n    ");
@@ -124,7 +124,7 @@ void buildBoard(){
 
 piece* choosePos(){
     char pos[3];
-    scanf("%s", &pos);//a,3
+    scanf("%s", &pos);
     char *ptr = strtok(pos, ",");
     int x, y, temp, j = 0;
 
@@ -138,6 +138,7 @@ piece* choosePos(){
             y = temp;
         } else if (j == 1) {
             x = temp;
+            x=7-x;
         }
 
         ptr = strtok(NULL, ",");
@@ -187,7 +188,6 @@ int main(){
 
     initiateBoard();
     buildBoard();
-    
 
     int i = 0;
     while(1) {
