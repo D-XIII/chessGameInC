@@ -83,7 +83,7 @@ int* getPos(piece* piece){
     temp[0] = -1;
     temp[1] = -1;
     for (int x = 0; x < 8; x++){
-        for (int y = 0; y < 8; y++){
+        for (int y = 0; y < 8; y++){ 
             if (piece == &board[x][y]){
                 temp[0] = x;
                 temp[1] = y;
@@ -113,17 +113,14 @@ int checkMove(piece*  piece, int x, int y){
     }
     
 
-    if (piece->class == "bishop")
-    {
+    if (piece->class == "bishop"){
 
-        if (abs(posX-x == abs(posY-y)))
-        {
+        if (abs(posX-x) == abs(posY-y)){
             possible = 1;
 
             int checkX = posX;
             int checkY = posY; 
-            while (checkX != x && possible == 1)
-            {
+            while (checkX != x && possible == 1){
 
                 if (posX<x){checkX++;}
                 else{checkX--;}
@@ -132,16 +129,11 @@ int checkMove(piece*  piece, int x, int y){
 
                 int *tab = getPos(&board[checkX][checkY]);
                 
-                if (board[checkX][checkY].team != 0)
-                {
+                if (board[checkX][checkY].team != 0){
                     possible = 0;
                 }
-                
             }
-
         }
-        
-        
     }
 
     if (piece->team == board[x][y].team)
