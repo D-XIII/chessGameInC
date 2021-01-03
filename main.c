@@ -101,6 +101,7 @@ int checkPiece(int x, int y){
 }
 
 int checkMove(piece*  piece, int x, int y){
+
     int *pos = getPos(piece);
     int posX = pos[0];
     int posY = pos[1];
@@ -108,12 +109,21 @@ int checkMove(piece*  piece, int x, int y){
     
     if (piece->class == "pawn")
     {
-        int orientation = -1^piece->team;
+        int orientation;
+        if (piece->team == 1){orientation = -1;}
+        else{orientation = 1;}
         
+        if((posX == x+1*orientation) && (posY == y)){
+            possible = 1;
+        }
+
+        if(posX == 3.5+2.5*orientation && posX == x+2*orientation && posY == y){
+            possible = 1;
+        }
+
     }
     
-
-    if (piece->class == "bishop"){
+    if (piece->class == "bishop" || piece->class == "queen" && possible == 0){
 
         if (abs(posX-x) == abs(posY-y)){
             possible = 1;
@@ -135,6 +145,50 @@ int checkMove(piece*  piece, int x, int y){
             }
         }
     }
+
+    if(piece->class == "rook" || piece->class == "queen" && possible == 0){
+        if (posX == x && posY != y || posX != x && posY == y){
+
+            possible = 1;
+
+            int checkX = posX;
+            int checkY = posY; 
+            while (checkX != x && possible == 1){
+
+                if (posX<x){checkX++;}
+                if (posX>x){checkX--;}
+                
+                if (posY<y){checkY++;}
+                if (posY>y){checkY--;}
+                
+
+                int *tab = getPos(&board[checkX][checkY]);
+                
+                if (board[checkX][checkY].team != 0){
+                    possible = 0;
+                }
+            }
+        }
+    }
+
+    if (piece->class == "knight")
+    {
+        if ((abs(posX - x) == 1 && abs(posY - y) == 2) || (abs(posX - x) == 2 && abs(posY - y) == 1))
+        {
+            possible = 1;
+        }
+        
+    }
+    
+    if (piece->class == "king")
+    {
+        if ((abs(posX - x) == 1 || posX == x) && (abs(posY - y) == 1 || posY == y))
+        {
+            possible = 1;
+        }
+        
+    }
+    
 
     if (piece->team == board[x][y].team)
     {
