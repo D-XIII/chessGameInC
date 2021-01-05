@@ -8,6 +8,7 @@ struct piece{
     char* class;
     int posX;
     int posY;
+    int plays;
 };
 typedef struct piece piece;
 
@@ -16,6 +17,7 @@ piece construct(int team, char* class){
     piece newPiece;
     newPiece.class=class;
     newPiece.team=team;
+    newPiece.plays= 0;
     return newPiece;
 }
 // defining game board
@@ -29,17 +31,6 @@ void initiateBoard(){
         board[6][i]=construct(2,"pawn");
 
     }
-
-    // for (int x = 0; x < 8; x++)
-    // {
-    //     for (int y = 0; y < 8; y++)
-    //     {
-    //         board[x][y].posX = x+1;
-    //         board[x][y].posY = 8-y;
-    //         printf("%d %d; ", board[x][y].posX, board[x][y].posY);
-    //     }
-        
-    // }
 
     //build rook for red team
     board[0][0]=construct(1,"rook");
@@ -113,13 +104,17 @@ int checkMove(piece*  piece, int x, int y){
         if (piece->team == 1){orientation = -1;}
         else{orientation = 1;}
         
-        if((posX == x+1*orientation) && (posY == y)){
+        if((posX == x+1*orientation) && (posY == y) && board[x][y].team == 0){
             possible = 1;
         }
 
         if(posX == 3.5+2.5*orientation && posX == x+2*orientation && posY == y){
             possible = 1;
         }
+
+        if(abs(posY-y) == 1 && posX == x +1*orientation && board[x][y].team != 0 && board[x][y].team != piece->team){
+            possible = 1;
+        }        
 
     }
     
@@ -130,7 +125,7 @@ int checkMove(piece*  piece, int x, int y){
 
             int checkX = posX;
             int checkY = posY; 
-            while (checkX != x && possible == 1){
+            while ((checkX != x || checkY != y) && possible == 1){
 
                 if (posX<x){checkX++;}
                 else{checkX--;}
@@ -141,6 +136,9 @@ int checkMove(piece*  piece, int x, int y){
                 
                 if (board[checkX][checkY].team != 0){
                     possible = 0;
+                }
+                if (&board[checkX][checkY] == &board[x][y] ){
+                    possible = 1;
                 }
             }
         }
@@ -153,7 +151,7 @@ int checkMove(piece*  piece, int x, int y){
 
             int checkX = posX;
             int checkY = posY; 
-            while (checkX != x && possible == 1){
+            while ((checkX != x || checkY != y) && possible == 1 ){
 
                 if (posX<x){checkX++;}
                 if (posX>x){checkX--;}
@@ -164,8 +162,11 @@ int checkMove(piece*  piece, int x, int y){
 
                 int *tab = getPos(&board[checkX][checkY]);
                 
-                if (board[checkX][checkY].team != 0){
+                if (board[checkX][checkY].team != 0 ){
                     possible = 0;
+                }
+                if (&board[checkX][checkY] == &board[x][y] ){
+                    possible = 1;
                 }
             }
         }
@@ -188,13 +189,35 @@ int checkMove(piece*  piece, int x, int y){
         }
         
     }
-    
 
     if (piece->team == board[x][y].team)
     {
         possible = 0;
     }
     
+    if (piece->class == "king" && piece->plays == 0 && board[x][y].plays == 0 && board[x][y].class == "rook" && board[x][y].team == piece->team){
+        if (posX == x && posY != y || posX != x && posY == y){
+
+            possible = 1;
+
+            int checkX = posX;
+            int checkY = posY; 
+
+            while (checkY != y && possible == 1){
+                if (posY<y){checkY++;}
+                if (posY>y){checkY--;}
+
+                if ( board[checkX][checkY].class != "rook" && board[checkX][checkY].team != 0){
+                    possible = 0;
+                }
+
+                if (&board[checkX][checkY] == &board[x][y] && board[checkX][checkY].team == piece->team){
+                    possible = 1;
+                }
+            }
+        }
+    }
+
     return possible;
 
 }
@@ -314,7 +337,6 @@ void move(int player) {
     }
 
     printf("Vous avez choisi le pion %s!\n", laPiece->class);
-    printf("%d => %d\n", player, laPiece->team);
     if (laPiece->team == player) {
         printf("c'est votre pion\n");
     }
@@ -333,6 +355,8 @@ void move(int player) {
     piece* target = choosePos();
     target->class = laPiece->class;
     target->team = laPiece->team;
+    laPiece->plays ++;
+    target->plays =laPiece->plays;
     laPiece->class = NULL;
     laPiece->team = 0;
 }
