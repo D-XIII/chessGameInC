@@ -10,6 +10,7 @@ struct piece{
     int posY;
     int plays;
     int pawnTrail;
+    int teamTrail;
 };
 typedef struct piece piece;
 
@@ -20,6 +21,7 @@ piece construct(int team, char* class){
     newPiece.team=team;
     newPiece.plays= 0;
     newPiece.pawnTrail = 0;
+    newPiece.teamTrail = 0;
     return newPiece;
 }
 // defining game board
@@ -316,7 +318,90 @@ piece* choosePos(){
     return &board[x][y];
 }
 
-void move(int player) {
+int countScore(){
+
+    int score = 0;
+
+    for (int x = 0; x < 8; x++)
+    {
+        for (int y = 0; y < 8; y++)
+        {
+            int value = 0;
+            if (board[x][y].class == "king")
+            {
+                value= 900;
+            }
+            if (board[x][y].class == "queen")
+            {
+                value= 90;
+            }
+            if (board[x][y].class == "rook")
+            {
+                value= 50;
+            }
+            if (board[x][y].class == "bishop")
+            {
+                value= 30;
+            }
+            if (board[x][y].class == "knight")
+            {
+                value= 30;
+            }
+            if (board[x][y].class == "pawn")
+            {
+                value= 10;
+            }
+            
+            if (board[x][y].team == 2)
+            {
+                score += value;
+            }
+            else
+            {
+                score -= value;
+            }
+            
+        }
+        
+    }
+
+    return score;
+
+}
+
+char * minMax(int depth){
+
+    for (int x = 0; x < 8; x++)
+    {
+        for (int y = 0; y < 8; y++)
+        {
+            if (board[x][y].team == 2)
+            {
+                if (checkMove(&board[x][y],x,y) == 1)
+                {
+                    /* code */
+                }
+                
+            }
+            
+        }
+    }
+    
+
+    piece copieBoard[8][8];
+
+    for (int x = 0; x < 8; x++)
+    {
+        for (int y = 0; y < 8; y++)
+        {
+            copieBoard[x][y] = board[x][y];
+        }
+    }
+    
+
+}
+
+void move(int player, int gamemode) {
     int posX,posY;
     if (player == 1){
         printf("\033[31m");
@@ -325,8 +410,20 @@ void move(int player) {
         printf("\033[34m");
     }
     printf("Joueur %d\033[0m : Entrer la position du pion que vous voulez bouger (ex: A,1): ", player);
-
+    
     piece* laPiece = choosePos();
+
+    if (player == 2 && gamemode == 1)
+    {
+        // char* AImove = minMax()
+    }
+    else
+    {
+        piece* laPiece = choosePos();
+    }
+    
+    
+
     
     for (int x = 0; x < 8; x++)
     {
@@ -359,6 +456,26 @@ void move(int player) {
     printf("Joueur %d\033[0m : Vers quelle position voulez vous bouger cette piece ? (ex: A,1): ", player);
     buildBoard(laPiece);
     piece* target = choosePos();
+
+    if (laPiece->class == "pawn" && abs(getPos(target)[0]-getPos(laPiece)[0]) == 2){
+        piece trailedPiece = board[(getPos(laPiece)[0]+getPos(target)[0])/2][(getPos(laPiece)[1])];
+        trailedPiece.pawnTrail = 1;
+        trailedPiece.teamTrail = laPiece->team;
+    }
+
+    if (laPiece->class == "pawn" && abs(getPos(target)[0]-getPos(laPiece)[0]) == 2){
+        board[(getPos(laPiece)[0]+getPos(target)[0])/2][(getPos(laPiece)[1])].pawnTrail = 1;
+    }
+
+    if(target->pawnTrail == 1 && target->team != laPiece->team){
+
+        piece empty = board[getPos(laPiece)[0]][(getPos(target)[1])];
+        board[getPos(laPiece)[0]][(getPos(target)[1])].class = NULL;
+        board[getPos(laPiece)[0]][(getPos(target)[1])].team = 0;
+        board[getPos(laPiece)[0]][(getPos(target)[1])].pawnTrail = 0;
+    }
+
+
     target->class = laPiece->class;
     target->team = laPiece->team;
     laPiece->plays ++;
@@ -367,7 +484,7 @@ void move(int player) {
     laPiece->team = 0;
 
     if(target->class == "pawn" && (getPos(target)[0] == 0 || getPos(target)[0] == 7)){
-        printf("ok2");
+
         char class;
         printf("votre pion a atteint la derniere rangee, choisissez sa nouvelle classe\nreine:\t\tq\nfou:\t\tb\ntour:\t\tr\ncavalier:\tn\nVotre choix:");
         scanf(" %c",&class);
@@ -393,16 +510,23 @@ void move(int player) {
     }
 }
 
+
 //Main function
 int main(){
     piece *voidPiece;
+    
+    int gamemode = 0 ;
+    printf("Choisissez le mode de jeu:\n1 Joueur:\t1\n2 Joueurs:\t2\n");
+    scanf("%d",&gamemode);
 
     initiateBoard();
     buildBoard(voidPiece);
 
+    printf("%d",countScore());
+
     int i = 0;
     while(1) {
-        move((i%2)+1);
+        move((i%2)+1,gamemode);
         i++;
         buildBoard(voidPiece);
     }
