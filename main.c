@@ -9,6 +9,7 @@ struct piece{
     int posX;
     int posY;
     int plays;
+    int pawnTrail;
 };
 typedef struct piece piece;
 
@@ -18,6 +19,7 @@ piece construct(int team, char* class){
     newPiece.class=class;
     newPiece.team=team;
     newPiece.plays= 0;
+    newPiece.pawnTrail = 0;
     return newPiece;
 }
 // defining game board
@@ -114,7 +116,11 @@ int checkMove(piece*  piece, int x, int y){
 
         if(abs(posY-y) == 1 && posX == x +1*orientation && board[x][y].team != 0 && board[x][y].team != piece->team){
             possible = 1;
-        }        
+        }
+
+        if(board[x][y].pawnTrail == 1){
+            possible = 1;
+        }
 
     }
     
@@ -356,9 +362,35 @@ void move(int player) {
     target->class = laPiece->class;
     target->team = laPiece->team;
     laPiece->plays ++;
-    target->plays =laPiece->plays;
+    target->plays = laPiece->plays;
     laPiece->class = NULL;
     laPiece->team = 0;
+
+    if(target->class == "pawn" && (getPos(target)[0] == 0 || getPos(target)[0] == 7)){
+        printf("ok2");
+        char class;
+        printf("votre pion a atteint la derniere rangee, choisissez sa nouvelle classe\nreine:\t\tq\nfou:\t\tb\ntour:\t\tr\ncavalier:\tn\nVotre choix:");
+        scanf(" %c",&class);
+        
+        switch (class)
+        {
+        case 'q':
+            target->class = "queen";
+            break;
+        case 'r':
+            target->class = "rook";
+            break;
+        case 'b':
+            target->class = "bishop";
+            break;
+        case 'n':
+            target->class = "knight";
+            break;
+        default:
+            break;
+        }
+
+    }
 }
 
 //Main function
