@@ -318,7 +318,7 @@ piece* choosePos(){
     return &board[x][y];
 }
 
-int countScore(){
+int countScore(piece board[][8]){
 
     int score = 0;
 
@@ -379,14 +379,11 @@ char * minMax(int depth){
             {
                 if (checkMove(&board[x][y],x,y) == 1)
                 {
-                    /* code */
+                    
                 }
-                
             }
-            
         }
     }
-    
 
     piece copieBoard[8][8];
 
@@ -397,7 +394,6 @@ char * minMax(int depth){
             copieBoard[x][y] = board[x][y];
         }
     }
-    
 
 }
 
@@ -522,7 +518,7 @@ int main(){
     initiateBoard();
     buildBoard(voidPiece);
 
-    printf("%d",countScore());
+    printf("%d",countScore(board));
 
     int i = 0;
     while(1) {
