@@ -1,4 +1,4 @@
-// Correspond à la fonction Trouve disponible
+// Correspond à la fonction checkMove(piece, x, y)
 FONCTION ENTIER CHECKMOVE
     VARIABLE GLOBALE
         PIECE: board
