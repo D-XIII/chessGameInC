@@ -369,7 +369,9 @@ int countScore(piece board[][8]){
 
 }
 
-char * minMax(int depth){
+char * eval(int depth){
+
+    char* moves[8][8];
 
     for (int x = 0; x < 8; x++)
     {
@@ -377,24 +379,50 @@ char * minMax(int depth){
         {
             if (board[x][y].team == 2)
             {
-                if (checkMove(&board[x][y],x,y) == 1)
+                for (int z = 0; z < 8; z++)
                 {
-                    
+                    for (int w = 0; w < 8; w++)
+                    {
+                        char* pieceMoves[8][8];
+
+                        piece copieBoard[8][8];
+
+                        for (int x = 0; x < 8; x++)
+                        {
+                            for (int y = 0; y < 8; y++)
+                            {
+                                copieBoard[x][y] = board[x][y];
+                                if (checkMove(&board[x][y],z,w) == 1)
+                                {   piece laPiece = copieBoard[x][y];
+                                    piece target = copieBoard[z][w];
+
+                                    target.class = laPiece.class;
+                                    target.team = laPiece.team;
+                                    target.plays = laPiece.plays;
+                                    laPiece.class = NULL;
+                                    laPiece.team = 0;
+                                    
+                                    // sprintf(countScore(copieBoard),"%d ", moves[x][y]);  
+                                    // printf("%s",moves[x][y]);                      
+                                } 
+                            }
+                        }
+
+                        for (int i = 0; i < 8; i++)
+                        {
+                            for (int j = 0; j < j; j++)
+                            {
+                                if (pieceMoves[i][j] > moves[x][y]){
+                                    moves[x][y] = pieceMoves[z][w];
+                                }
+                            }
+                        }
+
+                    }
                 }
             }
         }
     }
-
-    piece copieBoard[8][8];
-
-    for (int x = 0; x < 8; x++)
-    {
-        for (int y = 0; y < 8; y++)
-        {
-            copieBoard[x][y] = board[x][y];
-        }
-    }
-
 }
 
 void move(int player, int gamemode) {
@@ -411,16 +439,13 @@ void move(int player, int gamemode) {
 
     if (player == 2 && gamemode == 1)
     {
-        // char* AImove = minMax()
+        // char* AImove = eval()
     }
     else
     {
-        piece* laPiece = choosePos();
     }
     
-    
-
-    
+        // piece* laPiece = choosePos();
     for (int x = 0; x < 8; x++)
     {
         for (int y = 0; y < 8; y++)
@@ -519,7 +544,7 @@ int main(){
     buildBoard(voidPiece);
 
     printf("%d",countScore(board));
-
+    eval(0);
     int i = 0;
     while(1) {
         move((i%2)+1,gamemode);
