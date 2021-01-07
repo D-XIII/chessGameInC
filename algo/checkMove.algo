@@ -22,15 +22,18 @@ FONCTION ENTIER CHECKMOVE
         posY = pos[1]
         possible = 0
 
+        // si la piece est un pion
         SI Piece->class == "pawn" ALORS
             orientation = 0
 
+            // on verifie le sens 
             SI Piece->team == 1 ALORS
                 orientation = -1
             SINON
                 orientation = 1
             FIN SI
 
+            
             SI (posX == x + 1 * orientation) ET (posY == y) ET (board[x][y].team == 0) ALORS
                 possible = 1
             FIN SI
@@ -48,7 +51,7 @@ FONCTION ENTIER CHECKMOVE
             FIN SI
         FIN SI
 
-
+        // si la piece est le fou ou la reine
         SI Piece->class == "bishop" OU Piece->class == "queen" ET possible == 0 ALORS
             SI VALEUR_ABSOLUE(posX - x) == VALEUR_ABSOLUE(posY - y) ALORS
                 possible = 1
@@ -82,6 +85,7 @@ FONCTION ENTIER CHECKMOVE
                 FIN TANT QUE
         FIN SI
 
+        // si la piece est la tour ou la reine
         SI (Piece->class == "rook" OU Piece->class == "queen") ET possible == 0 ALORS
             SI (posX == x ET posY EST DIFFERENT DE y OU posX EST DIFFERENT DE x) ET posY == y ALORS
 
@@ -151,5 +155,4 @@ FONCTION ENTIER CHECKMOVE
         FIN SI
 
         RETOURNER possible
-      FIN
-FINFONCTION
+FIN FONCTION
