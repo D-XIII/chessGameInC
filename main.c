@@ -88,13 +88,6 @@ int* getPos(piece* piece){
     }
 }
 
-int checkPiece(int x, int y){
-    int temp = 1;
-    if (board[x][y].team==0){
-        temp = 0;
-    }
-}
-
 int checkMove(piece*  piece, int x, int y){
 
     int *pos = getPos(piece);

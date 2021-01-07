@@ -8,6 +8,147 @@ struct piece {
     teamTrail: entier
 }
 
-fonction construct (team: entier, class: string) {
+fonction construct (team: entier, class: string): piece {
+    piece newPiece
+    newPiece.class = class
+    newPiece.team = team
+    newPiece.plays = 0
+    newPiece.panwTrail = 0
+    newPiece.teamTrail = 0
+    retourner(newPiece)
+}
+
+board: tableau d'entier 8x8
+
+fonction initiateBoard (): vide {
+    // construction des 8 pions de chaque team
+    pour i allant de 0 à 7 
+        board[1][i] = construct(1, "pawn")
+        board[6][i] = construct(2, "pawn")
+    fin pour
+
+    // construction rook pour la team red 
+    board[0][0]=construct(1,"rook")
+    board[0][7]=construct(1,"rook")
+
+    // construction rook pour la team blue 
+    board[7][0]=construct(2,"rook")
+    board[7][7]=construct(2,"rook")
+
+    // construction knight pour la team red 
+    board[0][1]=construct(1,"knight")
+    board[0][6]=construct(1,"knight")
     
+    // construction knight pour la team blue 
+    board[7][1]=construct(2,"knight")
+    board[7][6]=construct(2,"knight")
+
+    // construction bishop pour la team red 
+    board[0][2]=construct(1,"bishop")
+    board[0][5]=construct(1,"bishop")
+
+    // construction bishop pour la team blue 
+    board[7][2]=construct(2,"bishop")
+    board[7][5]=construct(2,"bishop")
+
+    // construction queen pour la team red 
+    board[0][3]=construct(1,"queen")
+
+    // construction queen pour la team blue 
+    board[7][3]=construct(2,"queen")
+    
+    // construction king pour la team red 
+    board[0][4]=construct(1,"king")
+
+    // construction king pour la team blue 
+    board[7][4]=construct(2,"king")
+}
+
+fonction getPos(piece: piece): tableau d'entier {
+    temp: tableau d'entier de taille 2
+    temp[0] = -1
+    temp[1] = -1
+    pour x allant de 0 à 7
+        pour y allant de 0 à 7
+            si piece est égale à board[x][y]
+                temp[0] = x
+                temp[1] = y
+                retourner(temp)
+            fin si
+        fin pour
+    fin pour
+}
+
+fonction buildBoard(piece: piece): vide {
+    pour i allant de 0 à 7
+        // on affiche les 8 lettre de l'alphabet de A à H en haut du board
+        afficher(dechiffrerASCII(65+i))
+    fin pour
+    
+    pour i allant de 0 à 7
+        // on affiche les numéro de 8 à 1 au debut de chaque ligne
+        afficher(8-i)
+    
+        pour j allant de 0 à 7
+            si board[i][j].team == 1
+                mettre la couleur de la prochaine pièce sur rouge
+            fin si
+            si board[i][j].team == 2
+                mettre la couleur de la prochaine pièce sur bleu
+            fin si
+            // si le pion selectionné en paramètre a la possibilité de se déplacé sur la case i,j
+            si checkMove(piece, i, j) == 1
+                mettre la couleur de la prochaine pièce sur vert
+            fin si
+
+            switch (board[i][j].class) 
+                case "pawn":
+                    afficher("P")
+                    break
+                case "rook":
+                    afficher("R")
+                    break
+                case "knight":
+                    afficher("N")
+                    break
+                case "bishop":
+                    afficher("B")
+                    break
+                case "queen":
+                    afficher("Q")
+                    break
+                case "king":
+                    afficher("K")
+                    break
+                default:
+                    afficher("X")
+                    break
+            fin switch
+        fin pour
+        // on affiche les numéro de 8 à 1 à la fin de chaque ligne
+        afficher(8-1)
+    fin pour
+    
+    pour i allant de 0 à 7
+        // on affiche les 8 lettre de l'alphabet de A à H en bas du board
+        afficher(dechiffrerASCII(65+i))
+    fin pour
+}
+
+fonction choosePos(): piece {
+    pos: string
+    pos = Entré utilisateur de la forme A,1
+    tablePos: tableau de string
+    tablePos = pos.split(",")
+    // Il existe une table de correspondance:
+    /*
+    Lettre:
+        A => 0
+    Chiffre:
+        1 => 0
+    */
+    x, y: entier
+    x = tablePos[0] // en utilisant la table de correspondance
+    y = tablePos[1] // en utilisant la table de correspondance
+    retourner(board[x][y])
 }
