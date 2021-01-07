@@ -18,8 +18,8 @@ FONCTION ENTIER COUNTSCORE
                 SI board[x][y].class == "bishop" ALORS value = 30 FIN SI
                 SI board[x][y].class == "knight" ALORS value = 30 FIN SI
                 SI board[x][y].class == "pawn" ALORS value = 10 FIN SI
-                SI board[x][y].team == 2 ALORS score += value
-                SINON score -= value
+                SI board[x][y].team == 2 ALORS score += value SINON score -= value FIN SI
+            
             FIN POUR
         FIN POUR
 
