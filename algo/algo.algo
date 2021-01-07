@@ -152,3 +152,4 @@ fonction choosePos(): piece {
     y = tablePos[1] // en utilisant la table de correspondance
     retourner(board[x][y])
 }
+

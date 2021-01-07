@@ -245,7 +245,8 @@ void buildBoard(piece* piece){
             if (board[i][j].team == 2){
                 printf("\033[34m");
             }
-            if (checkMove(piece, i, j))
+
+            if (piece != NULL && checkMove(piece, i, j))
             {
                 printf("\033[32m");
 
@@ -391,60 +392,58 @@ char * minMax(int depth){
 }
 
 void move(int player, int gamemode) {
-    int posX,posY;
-    if (player == 1){
-        printf("\033[31m");
-    }
-    else{
-        printf("\033[34m");
-    }
-    printf("Joueur %d\033[0m : Entrer la position du pion que vous voulez bouger (ex: A,1): ", player);
-    
-    piece* laPiece = choosePos();
 
-    if (player == 2 && gamemode == 1)
-    {
-        // char* AImove = minMax()
-    }
-    else
-    {
-        piece* laPiece = choosePos();
-    }
-    
-    
+    piece* laPiece;
+    piece* target;
 
     
-    for (int x = 0; x < 8; x++)
+
+    do
     {
-        for (int y = 0; y < 8; y++)
-        {
-            if (laPiece == &board[x][y])
-            {
-                int posX = x ;
-                int posY = y ;
-            }
-            
+        buildBoard(NULL);
+
+        if (player == 1){
+            printf("\033[31m");
+        }
+        else{
+            printf("\033[34m");
+        }
+        printf("Joueur %d\033[0m : Entrer la position du pion que vous voulez bouger (ex: A,1): ", player);
+        
+        laPiece = choosePos();
+        printf("Vous avez choisi le pion %s!\n", laPiece->class);
+        if (laPiece->team != player) {
+            printf("Ce n'est pas votre pion!\n");
         }
         
-    }
+        buildBoard(laPiece);
 
-    printf("Vous avez choisi le pion %s!\n", laPiece->class);
-    if (laPiece->team == player) {
-        printf("c'est votre pion\n");
-    }
-    else
-    {
-        printf("Ce n'est pas votre pion\n");
-    }
-    if (player == 1){
-        printf("\033[31m");
-    }
-    else{
-        printf("\033[34m");
-    }
-    printf("Joueur %d\033[0m : Vers quelle position voulez vous bouger cette piece ? (ex: A,1): ", player);
+
+        if (player == 1){
+            printf("\033[31m");
+        }
+        else{
+            printf("\033[34m");
+        }
+        printf("Joueur %d\033[0m : Vers quelle position voulez vous bouger cette piece ? (ex: A,1): ", player);
+        target = choosePos();
+        if(!checkMove(laPiece, getPos(target)[0], getPos(target)[1])) {
+            printf("Cette position n'est pas valide!\n");
+        }
+
+    } while (laPiece->team != player || !checkMove(laPiece, getPos(target)[0], getPos(target)[1]));
+
+
+
+    // if (player == 2 && gamemode == 1)
+    // {
+    //     // char* AImove = minMax()
+    // }
+    // else
+    // {
+    //     piece* laPiece = choosePos();
+    // }
     buildBoard(laPiece);
-    piece* target = choosePos();
 
     if (laPiece->class == "pawn" && abs(getPos(target)[0]-getPos(laPiece)[0]) == 2){
         piece trailedPiece = board[(getPos(laPiece)[0]+getPos(target)[0])/2][(getPos(laPiece)[1])];
@@ -502,14 +501,11 @@ void move(int player, int gamemode) {
 
 //Main function
 int main(){
-    piece *voidPiece;
-    
     int gamemode = 0 ;
     printf("Choisissez le mode de jeu:\n1 Joueur:\t1\n2 Joueurs:\t2\n");
     scanf("%d",&gamemode);
 
     initiateBoard();
-    buildBoard(voidPiece);
 
     printf("%d",countScore(board));
 
@@ -517,7 +513,7 @@ int main(){
     while(1) {
         move((i%2)+1,gamemode);
         i++;
-        buildBoard(voidPiece);
+        // buildBoard(voidPiece);
     }
 
     return 0;
