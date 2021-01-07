@@ -1,0 +1,158 @@
+// Correspond à la fonction checkMove(piece, x, y)
+FONCTION ENTIER CHECKMOVE
+    VARIABLE GLOBALE
+        PIECE: board
+    INPUT
+        PIECE: Piece
+        ENTIER: x 
+        ENTIER: y
+    VARIABLE
+       TABLEAU : pos 
+       ENTIER: posX
+       ENTIER: posY
+       ENTIER: possible
+       ENTIER: orientation
+       ENTIER: checkX
+       ENTIER: checkY
+       TABLEAU: tab
+    DEBUT
+
+        pos = getPos(Piece)
+        posX = pos[0]
+        posY = pos[1]
+        possible = 0
+
+        // si la piece est un pion
+        SI Piece->class == "pawn" ALORS
+            orientation = 0
+
+            // on verifie le sens 
+            SI Piece->team == 1 ALORS
+                orientation = -1
+            SINON
+                orientation = 1
+            FIN SI
+
+            
+            SI (posX == x + 1 * orientation) ET (posY == y) ET (board[x][y].team == 0) ALORS
+                possible = 1
+            FIN SI
+
+            SI (posX == 3.5 + 2.5 * orientation ET posX == x + 2 * orientation ET posY == y) ALORS
+                possible = 1
+            FIN SI
+
+            SI (VALEUR_ABSOLUE(posY - y) == 1 ET posX == x + 1 * orientation ET board[x][y].team != 0 ET board[x][y].team != Piece->team) ALORS
+                possible = 1
+            FIN SI
+
+            SI (board[x][y].pawnTrail == 1) ALORS
+                possible = 1
+            FIN SI
+        FIN SI
+
+        // si la piece est le fou ou la reine
+        SI Piece->class == "bishop" OU Piece->class == "queen" ET possible == 0 ALORS
+            SI VALEUR_ABSOLUE(posX - x) == VALEUR_ABSOLUE(posY - y) ALORS
+                possible = 1
+
+                checkX = posX
+                checkY = posY
+
+                TANT QUE ((checkX EST DIFFERENT DE x) OU (checkY EST DIFFERENT DE y)) ET possible = 1 
+                    SI posX < x ALORS
+                        checkX += checkX
+                    SINON
+                        checkX -= checkX
+                    FIN SI
+
+                    SI posY < y ALORS
+                        checkY += checkY
+                    SINON
+                        checkY -= checkY
+                    FIN SI
+
+                    tab = getPos(board[checkX][checkY])
+
+                    SI board[checkX][checkY].team EST DIFFERENT DE 0 ALORS
+                        possible = 0
+                    FIN SI
+
+                    SI board[checkX][checkY] == board[x][y] ALORS
+                        possible = 1
+                    FIN SI
+
+                FIN TANT QUE
+        FIN SI
+
+        // si la piece est la tour ou la reine
+        SI (Piece->class == "rook" OU Piece->class == "queen") ET possible == 0 ALORS
+            SI (posX == x ET posY EST DIFFERENT DE y OU posX EST DIFFERENT DE x) ET posY == y ALORS
+
+                possible = 1
+
+                checkX = posX
+                checkY = posY
+
+                TANT QUE (checkX EST DIFFERENT DE x OU checkY EST DIFFERENT DE y) ET possible = 1
+
+                    SI posX < x ALORS checkX += checkX
+                    SI posX > x ALORS checkX -= checkY
+
+                    SI posY < y ALORS checkY += checkY
+                    SI posY > y ALORS checkY -= checkY
+
+                    tab = getPos(board[checkX][checkY])
+
+                    SI (board[checkX][checkY].team) EST DIFFERENT DE 0 ALORS
+                        possible = 0
+                    FIN SI
+
+                    SI board[checkX][checkY] == board[x][y] ALORS
+                        possible = 1
+                    FIN SI
+            FIN SI
+        FIN SI
+
+        SI Piece->class = "knight" ALORS
+            SI VALEUR_ABSOLUE(posX - x) == 1 ET VALEUR_ABSOLUE(posY - y) == 2 
+                OU VALEUR_ABSOLUE(posX - x) == 2 ET VALEUR_ABSOLUE(posY - y) == 1
+            ALORS
+                possible = 1
+            FIN SI
+        FIN SI
+
+        SI Piece->class = "king" ALORS
+            SI (VALEUR_ABSOLUE(posX - x) == 1 OU posX = x) ET (VALEUR_ABSOLUE(posY - y) OU posY == y) ALORS
+                possible = 1
+            FIN SI
+        FIN SI
+
+        SI Piece->team == board[x][y].team
+            possible = 1;
+        FIN SI
+
+        SI Piece->class == "king" ET Piece->plays == 0 ET board[x][y].plays == 0 ET board[x][y].class == "rook" ET board[x][y].team == piece->team ALORS
+            SI (posX == x ET posY EST DIFFERENT DE y) OU (posX EST DIFFERENT DE x ET posY == y) ALORS
+                possible = 1
+
+                checkX = posX
+                checkY = posY
+
+                TANT QUE checkY EST DIFFERENT DE y ET possible == 1
+                    SI posY < y ALORS checkY += checkY
+                    SI posY > y ALORS checkY -= checkY
+
+                    SI board[checkX][checkY].class EST DIFFERENT DE "rook" ET board[checkX][checkY].team EST DIFFERENT DE 0 ALORS
+                        possible = 0
+                    FIN SI
+
+                    SI board[checkX][checkY] == board[x][y] ET board[checkX][checkY].team == Piece->team ALORS
+                        possible = 1
+                    FIN SI
+                FIN TANT QUE
+            FIN SI
+        FIN SI
+
+        RETOURNER possible
+FIN FONCTION
