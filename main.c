@@ -109,13 +109,13 @@ int checkMove(piece*  piece, int x, int y){
             possible = 1;
         }
 
-        if(abs(posY-y) == 1 && posX == x +1*orientation && board[x][y].team != 0 && board[x][y].team != piece->team){
+        if(abs(posY-y) == 1 && posX == x +1*orientation && (board[x][y].team != 0 && board[x][y].team != piece->team || board[x][y].pawnTrail == 1)){
             possible = 1;
         }
 
-        if(board[x][y].pawnTrail == 1){
-            possible = 1;
-        }
+        // if(board[x][y].pawnTrail == 1 && ){
+        //     possible = 1;
+        // }
 
     }
     
