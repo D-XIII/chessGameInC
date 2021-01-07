@@ -1,0 +1,13 @@
+struct piece {
+    team: entier
+    class: string
+    posX: entier
+    posY: entier
+    plays: entier
+    panwTrail: entier
+    teamTrail: entier
+}
+
+fonction construct (team: entier, class: string) {
+    
+}
