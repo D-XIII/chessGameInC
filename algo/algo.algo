@@ -79,6 +79,240 @@ fonction getPos(piece: piece): tableau d'entier {
     fin pour
 }
 
+fonction move(player: int): vide {
+    laPiece: piece
+    target: piece
+
+    faire
+        buildBoard(NULL)
+        afficher("Joueur {player} Entrer la position du pion que vous voulez bouger (ex: A,1):")
+        lapiece = choosePos()
+        si lapiece.team != player ALORS
+            afficher("Ce n'est pas votre pion!")
+        fin si
+
+        buildBoard(laPiece);
+
+        printf("Joueur {player} : Vers quelle position voulez vous bouger cette piece ? (ex: A,1): ")
+        target = choosePos();
+        si !checkMove(laPiece, getPos(target)[0], getPos(target)[1]) ALORS
+            afficher("Cette position n'est pas valide!")
+        fin si
+    tant que laPiece->team != player OU !checkMove(laPiece, getPos(target)[0], getPos(target)[1])
+
+    buildBoard(laPiece)
+
+    si laPiece.class == "pawn" ET valeurAbsolue(getPos(target)[0]-getPos(laPiece)[0] == 2) ALORS
+        trailedPiece: piece
+        trailedPiece = board[(getPos(laPiece)[0]+getPos(target)[0])/2][(getPos(laPiece)[1])]
+        trailedPiece.pawnTrail = 1
+        trailedPiece.teamTrail = laPiece.team
+    fin si
+
+    si laPiece->class == "pawn" ET valeurAbsolue(getPos(target)[0]-getPos(laPiece)[0]) == 2) ALORS
+        board[(getPos(laPiece)[0]+getPos(target)[0])/2][(getPos(laPiece)[1])].pawnTrail = 1
+    fin si
+    
+    if(target->pawnTrail == 1 ET target->team != laPiece->team){
+        empty: piece
+        empty = board[getPos(laPiece)[0]][(getPos(target)[1])]
+        board[getPos(laPiece)[0]][(getPos(target)[1])].class = NULL
+        board[getPos(laPiece)[0]][(getPos(target)[1])].team = 0
+        board[getPos(laPiece)[0]][(getPos(target)[1])].pawnTrail = 0
+    }
+
+    target.class = laPiece.class
+    target.team = laPiece.team
+    laPiece.plays++
+    target.plays = lapiece.plays
+    laPiece.class = NULL
+    lapiece.team = 0
+
+    si target->class == "pawn" ET (getPos(target)[0] == 0 OU getPos(target)[0] == 7)) ALORS
+
+        class: char
+        class = demander("votre pion a atteint la derniere rangee, choisissez sa nouvelle classe reine: q fou: b tour: r cavalier: n Votre choix:")
+        
+        switch (class)
+        debut
+            case 'q':
+                target-.class = "queen"
+                quitter
+            case 'r':
+                target->class = "rook"
+                quitter
+            case 'b':
+                target->class = "bishop"
+                quitter
+            case 'n':
+                target->class = "knight"
+                quitter
+            default:
+                quitter
+        fin
+
+    fin si
+}
+
+// Correspond à la fonction checkMove(piece, x, y)
+FONCTION ENTIER CHECKMOVE
+    VARIABLE GLOBALE
+        PIECE: board
+    INPUT
+        PIECE: Piece
+        ENTIER: x 
+        ENTIER: y
+    VARIABLE
+       TABLEAU : pos 
+       ENTIER: posX
+       ENTIER: posY
+       ENTIER: possible
+       ENTIER: orientation
+       ENTIER: checkX
+       ENTIER: checkY
+       TABLEAU: tab
+    DEBUT
+
+        pos = getPos(Piece)
+        posX = pos[0]
+        posY = pos[1]
+        possible = 0
+
+        // si la piece est un pion
+        SI Piece->class == "pawn" ALORS
+            orientation = 0
+
+            // on verifie le sens 
+            SI Piece->team == 1 ALORS
+                orientation = -1
+            SINON
+                orientation = 1
+            FIN SI
+
+            
+            SI (posX == x + 1 * orientation) ET (posY == y) ET (board[x][y].team == 0) ALORS
+                possible = 1
+            FIN SI
+
+            SI (posX == 3.5 + 2.5 * orientation ET posX == x + 2 * orientation ET posY == y) ALORS
+                possible = 1
+            FIN SI
+
+            SI (VALEUR_ABSOLUE(posY - y) == 1 ET posX == x + 1 * orientation ET (board[x][y].team != 0 ET board[x][y].team != Piece->team OU board[x][y].pawnTrail == 1) ALORS
+                possible = 1
+            FIN SI
+
+            SI (board[x][y].pawnTrail == 1) ALORS
+                possible = 1
+            FIN SI
+        FIN SI
+
+        // si la piece est le fou ou la reine
+        SI Piece->class == "bishop" OU Piece->class == "queen" ET possible == 0 ALORS
+            SI VALEUR_ABSOLUE(posX - x) == VALEUR_ABSOLUE(posY - y) ALORS
+                possible = 1
+
+                checkX = posX
+                checkY = posY
+
+                TANT QUE ((checkX EST DIFFERENT DE x) OU (checkY EST DIFFERENT DE y)) ET possible = 1 
+                    SI posX < x ALORS
+                        checkX += checkX
+                    SINON
+                        checkX -= checkX
+                    FIN SI
+
+                    SI posY < y ALORS
+                        checkY += checkY
+                    SINON
+                        checkY -= checkY
+                    FIN SI
+
+                    tab = getPos(board[checkX][checkY])
+
+                    SI board[checkX][checkY].team EST DIFFERENT DE 0 ALORS
+                        possible = 0
+                    FIN SI
+
+                    SI board[checkX][checkY] == board[x][y] ALORS
+                        possible = 1
+                    FIN SI
+
+                FIN TANT QUE
+        FIN SI
+
+        // si la piece est la tour ou la reine
+        SI (Piece->class == "rook" OU Piece->class == "queen") ET possible == 0 ALORS
+            SI (posX == x ET posY EST DIFFERENT DE y OU posX EST DIFFERENT DE x) ET posY == y ALORS
+
+                possible = 1
+
+                checkX = posX
+                checkY = posY
+
+                TANT QUE (checkX EST DIFFERENT DE x OU checkY EST DIFFERENT DE y) ET possible = 1
+
+                    SI posX < x ALORS checkX += checkX
+                    SI posX > x ALORS checkX -= checkY
+
+                    SI posY < y ALORS checkY += checkY
+                    SI posY > y ALORS checkY -= checkY
+
+                    tab = getPos(board[checkX][checkY])
+
+                    SI (board[checkX][checkY].team) EST DIFFERENT DE 0 ALORS
+                        possible = 0
+                    FIN SI
+
+                    SI board[checkX][checkY] == board[x][y] ALORS
+                        possible = 1
+                    FIN SI
+            FIN SI
+        FIN SI
+
+        SI Piece->class = "knight" ALORS
+            SI VALEUR_ABSOLUE(posX - x) == 1 ET VALEUR_ABSOLUE(posY - y) == 2 
+                OU VALEUR_ABSOLUE(posX - x) == 2 ET VALEUR_ABSOLUE(posY - y) == 1
+            ALORS
+                possible = 1
+            FIN SI
+        FIN SI
+
+        SI Piece->class = "king" ALORS
+            SI (VALEUR_ABSOLUE(posX - x) == 1 OU posX = x) ET (VALEUR_ABSOLUE(posY - y) OU posY == y) ALORS
+                possible = 1
+            FIN SI
+        FIN SI
+
+        SI Piece->team == board[x][y].team
+            possible = 1;
+        FIN SI
+
+        SI Piece->class == "king" ET Piece->plays == 0 ET board[x][y].plays == 0 ET board[x][y].class == "rook" ET board[x][y].team == piece->team ALORS
+            SI (posX == x ET posY EST DIFFERENT DE y) OU (posX EST DIFFERENT DE x ET posY == y) ALORS
+                possible = 1
+
+                checkX = posX
+                checkY = posY
+
+                TANT QUE checkY EST DIFFERENT DE y ET possible == 1
+                    SI posY < y ALORS checkY += checkY
+                    SI posY > y ALORS checkY -= checkY
+
+                    SI board[checkX][checkY].class EST DIFFERENT DE "rook" ET board[checkX][checkY].team EST DIFFERENT DE 0 ALORS
+                        possible = 0
+                    FIN SI
+
+                    SI board[checkX][checkY] == board[x][y] ET board[checkX][checkY].team == Piece->team ALORS
+                        possible = 1
+                    FIN SI
+                FIN TANT QUE
+            FIN SI
+        FIN SI
+
+        RETOURNER possible
+FIN FONCTION
+
 fonction buildBoard(piece: piece): vide {
     pour i allant de 0 à 7
         // on affiche les 8 lettre de l'alphabet de A à H en haut du board
@@ -153,3 +387,37 @@ fonction choosePos(): piece {
     retourner(board[x][y])
 }
 
+// La fonction countScore permettais de calculer le score de chaque pion pour l'IA (fonction non utilisé)
+fonction countScore(piece board[][8]): entier {
+    score: entier
+    score = 0
+    pour x allant de 0 à 7
+        pour y allant de 0 à 7
+            value: entier
+            value = 0
+
+            SI board[x][y].class == "king" ALORS value = 900 FIN SI
+            SI board[x][y].class == "queen" ALORS value = 90 FIN SI
+            SI board[x][y].class == "rook" ALORS value = 50 FIN SI
+            SI board[x][y].class == "bishop" ALORS value = 30 FIN SI
+            SI board[x][y].class == "knight" ALORS value = 30 FIN SI
+            SI board[x][y].class == "pawn" ALORS value = 10 FIN SI
+            SI board[x][y].team == 2 ALORS score += value SINON score -= value FIN SI
+        
+        fin pour
+    fin pour
+
+    retourner(score)
+}
+
+fonction main(): entier {
+    initiateBoard()
+    i: entier
+    i = 0
+    tant que VRAI 
+        move((i%2)+1)
+        i++
+    fin tant que
+
+    retourner(0)
+}
