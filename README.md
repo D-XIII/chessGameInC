@@ -27,3 +27,5 @@ La partie se fini lorsqu'un des rois est mort.
 Le projet est décomposé en 2 complexité.
 - Complexité quadratique lors du parcours du plateau, qui est un tableau a 2 dimentions (8x8)
 - Complexité linéaire pour la pluspart des autres fonctions
+
+-La complexité de l'IA est constante

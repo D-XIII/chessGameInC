@@ -91,10 +91,10 @@ fonction move(player: int): vide {
             afficher("Ce n'est pas votre pion!")
         fin si
 
-        buildBoard(laPiece);
+        buildBoard(laPiece)
 
         printf("Joueur {player} : Vers quelle position voulez vous bouger cette piece ? (ex: A,1): ")
-        target = choosePos();
+        target = choosePos()
         si !checkMove(laPiece, getPos(target)[0], getPos(target)[1]) ALORS
             afficher("Cette position n'est pas valide!")
         fin si
@@ -127,6 +127,19 @@ fonction move(player: int): vide {
     target.plays = lapiece.plays
     laPiece.class = NULL
     lapiece.team = 0
+
+    si target.class == "rook" & laPiece == "king" && target.team == laPiece.class ALORS
+        SI getPos(laPiece)[1] > getPos(target)[1] ALORS
+            board[getPos(laPiece)[0]][6].class = "king"
+            board[getPos(laPiece)[0]][5].class = "rook"
+
+        SI getPos(laPiece)[1] < getPos(target)[1] ALORS
+            board[getPos(laPiece)[0]][1].class = "king"
+            board[getPos(laPiece)[0]][2].class = "rook"
+
+        board[getPos(target)[0]][getPos(target)[0]].class = NULL
+            
+
 
     si target->class == "pawn" ET (getPos(target)[0] == 0 OU getPos(target)[0] == 7)) ALORS
 
@@ -285,7 +298,7 @@ FONCTION ENTIER CHECKMOVE
         FIN SI
 
         SI Piece->team == board[x][y].team
-            possible = 1;
+            possible = 1
         FIN SI
 
         SI Piece->class == "king" ET Piece->plays == 0 ET board[x][y].plays == 0 ET board[x][y].class == "rook" ET board[x][y].team == piece->team ALORS
@@ -410,14 +423,161 @@ fonction countScore(piece board[][8]): entier {
     retourner(score)
 }
 
+FONCTION checkWin(){
+    VARIABLE GLOBALE
+        PIECE: board
+
+    VARIABLE
+    
+    entier: winOne
+    entier: winTwo
+    
+    DEBUT
+    winOne = 1
+    winTwo = 1
+    pour x allant de 0 a 7 FAIRE
+    
+        pour y allant de 0 a 7 FAIRE
+
+            SI board[x][y].class == "king" ALORS
+            
+                SI board[x][y].team == 1 ALORS
+                    winTwo = 0
+            
+                SI board[x][y].team == 2
+                    winOne = 0
+
+    SI winOne == 1 ALORS
+    
+        retourner 1
+    
+    SI winTwo == 1 ALORS
+    
+        retourner 2
+    
+    retourner 0
+    
+FIN
+
 fonction main(): entier {
     initiateBoard()
     i: entier
+    win: entier
+    win = 0
     i = 0
-    tant que VRAI 
+    tant que win == 0 FAIRE
         move((i%2)+1)
         i++
+        win = checkWin()
     fin tant que
+
+    affiche(Bravo au joueur {win}, il remporte la partie!)
 
     retourner(0)
 }
+
+============================FONCTION IA NON IMPLEMENTE===========================
+
+struct pieceMove{
+    entier: score
+    entier: pieceX
+    entier: pieceY
+    entier: moveY
+    entier: moveX
+}
+
+pieceMove eval: pieceMove{
+    VARIABLE GLOBALE
+        PIECE: board
+    
+    VARIABLE
+        pieceMove moves[8][8]
+    
+    DEBUT
+
+    POUR x allant de 0 a 7 FAIRE
+    
+        POUR y allant de 0 a 7 FAIRE
+            
+            Si board[x][y].team == 2 ALORS
+
+                POUR w allant de 0 a 7 FAIRE
+                
+                    POUR w allant de 0 a 7 FAIRE
+                    
+                        pieceMove pieceMoves[8][8]
+
+                        piece copieBoard[8][8]
+
+                        POUR k allant de 0 a 7 FAIRE
+                        
+                            POUR l allant de 0 a 7 FAIRE
+                            
+                                copieBoard[k][l] = board[k][l]
+                            FIN POUR
+                        FIN POUR
+                        
+                        POUR k allant de 0 a 7 FAIRE
+                        
+                            POUR l allant de 0 a 7 FAIRE
+                            
+                                SIcheckMove(&copieBoard[x][y],z,w) == 1 && copieBoard[x][y].team == 2 ALORS
+                                   piece laPiece = copieBoard[x][y]
+                                    piece target = copieBoard[z][w]
+
+                                    target.class = laPiece.class
+                                    target.team = laPiece.team
+                                    target.plays = laPiece.plays
+                                    laPiece.class = NULL
+                                    laPiece.team = 0
+                                    
+                                    pieceMoves[z][w].score = countScore(copieBoard)
+
+                                SINON 
+                                
+                                    pieceMoves[z][w].score = -10000
+                                FIN SI
+                                
+                            FIN POUR
+                        FIN POUR
+
+                        POUR i allant de 0 a 7 FAIRE
+                        
+                            POUR j allant de 0 a 7 FAIRE
+                            
+                                SI pieceMoves[i][j].score > moves[x][y].score ALORS
+                                    moves[x][y].score = pieceMoves[z][w].score
+                                    moves[x][y].moveX = pieceMoves[z][w].moveX
+                                    moves[x][y].moveY = pieceMoves[z][w].moveY
+                                    moves[x][y].pieceX = pieceMoves[z][w].pieceX
+                                    moves[x][y].pieceY = pieceMoves[z][w].pieceY
+                                    
+                                FIN SI
+                            FIN POUR
+                        FIN POUR
+                    FIN POUR
+                FIN POUR
+            FIN SI
+        FIN POUR
+    FIN POUR
+
+    pieceMove bestMove
+    bestMove.score = -5000
+
+    POUR x allant de 0 a 7 FAIRE
+    
+        POUR y allant de 0 a 7 FAIRE
+            SI bestMove.score < moves[x][y].score ALORS
+            
+
+                bestMove.score = moves[x][y].score
+                bestMove.moveX = moves[x][y].moveX
+                bestMove.moveY = moves[x][y].moveY
+                bestMove.pieceX = moves[x][y].pieceX
+                bestMove.pieceY = moves[x][y].pieceY
+            FIN SI
+        FIN POUR
+    FIN POUR
+
+    retourner bestMove
+FIN

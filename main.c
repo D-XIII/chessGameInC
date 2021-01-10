@@ -113,10 +113,6 @@ int checkMove(piece*  piece, int x, int y){
             possible = 1;
         }
 
-        // if(board[x][y].pawnTrail == 1 && ){
-        //     possible = 1;
-        // }
-
     }
     
     if (piece->class == "bishop" || piece->class == "queen" && possible == 0){
@@ -404,7 +400,7 @@ char * eval(int depth){
 
                         for (int i = 0; i < 8; i++)
                         {
-                            for (int j = 0; j < j; j++)
+                            for (int j = 0; j < 8; j++)
                             {
                                 if (pieceMoves[i][j] > moves[x][y]){
                                     moves[x][y] = pieceMoves[z][w];
