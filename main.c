@@ -109,7 +109,7 @@ int checkMove(piece*  piece, int x, int y){
             possible = 1;
         }
 
-        if(abs(posY-y) == 1 && posX == x +1*orientation && (board[x][y].team != 0 && board[x][y].team != piece->team || board[x][y].pawnTrail == 1)){
+        if(abs(posY-y) == 1 && posX == x +1*orientation && (board[x][y].team != 0 && board[x][y].teamTrail != piece->team && board[x][y].pawnTrail == 1)){
             possible = 1;
         }
 
@@ -424,8 +424,6 @@ void move(int player, int gamemode) {
     piece* laPiece;
     piece* target;
 
-    
-
     do
     {
         buildBoard(NULL);
@@ -461,16 +459,6 @@ void move(int player, int gamemode) {
 
     } while (laPiece->team != player || !checkMove(laPiece, getPos(target)[0], getPos(target)[1]));
 
-
-
-    // if (player == 2 && gamemode == 1)
-    // {
-    //     // char* AImove = minMax()
-    // }
-    // else
-    // {
-    //     piece* laPiece = choosePos();
-    // }
     buildBoard(laPiece);
 
     if (laPiece->class == "pawn" && abs(getPos(target)[0]-getPos(laPiece)[0]) == 2){
@@ -526,23 +514,57 @@ void move(int player, int gamemode) {
     }
 }
 
+int checkWin(){
 
+    int winOne = 1;
+    int winTwo = 1;
+    for (int x = 0; x < 8; x++)
+    {
+        for (int y = 0; y < 8; y++)
+        {
+            if (board[x][y].class == "king")
+            {
+                if(board[x][y].team == 1){
+                    winTwo = 0;
+                }
+                if (board[x][y].team == 2)
+                {
+                    winOne = 0;
+                }
+            }
+        }
+    }
+
+    if (winOne == 1)
+    {
+        return 1;
+    }
+    if (winTwo == 1)
+    {
+        return 2;
+    }
+    return 0;
+    
+    
+}
 //Main function
 int main(){
-    int gamemode = 0 ;
-    printf("Choisissez le mode de jeu:\n1 Joueur:\t1\n2 Joueurs:\t2\n");
-    scanf("%d",&gamemode);
+    int gamemode = 2 ;
+    // printf("Choisissez le mode de jeu:\n1 Joueur:\t1\n2 Joueurs:\t2\n");
+    // scanf("%d",&gamemode);
 
     initiateBoard();
 
-    printf("%d",countScore(board));
-    eval(0);
+    int win = 0;
+
     int i = 0;
-    while(1) {
+    while(win == 0) {
         move((i%2)+1,gamemode);
         i++;
-        // buildBoard(voidPiece);
+        win = checkWin();
     }
+
+    printf("Bravo au joueur %d, il remporte la partie!",win);
 
     return 0;
 }
