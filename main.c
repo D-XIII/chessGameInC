@@ -14,6 +14,15 @@ struct piece{
 };
 typedef struct piece piece;
 
+struct pieceMove{
+    int score;
+    int pieceX;
+    int pieceY;
+    int moveY;
+    int moveX;
+};
+typedef struct pieceMove pieceMove;
+
 //piece constructor
 piece construct(int team, char* class){
     piece newPiece;
