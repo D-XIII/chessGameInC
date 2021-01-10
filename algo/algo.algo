@@ -213,7 +213,7 @@ FONCTION ENTIER CHECKMOVE
                 possible = 1
             FIN SI
 
-            SI (VALEUR_ABSOLUE(posY - y) == 1 ET posX == x + 1 * orientation ET (board[x][y].team != 0 ET board[x][y].team != Piece->team OU board[x][y].pawnTrail == 1) ALORS
+            SI (VALEUR_ABSOLUE(posY - y) == 1 ET posX == x + 1 * orientation ET (board[x][y].team != 0 ET board[x][y].teamTrail != Piece->team ET board[x][y].pawnTrail == 1) ALORS
                 possible = 1
             FIN SI
 
