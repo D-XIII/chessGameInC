@@ -1,3 +1,5 @@
+//ALGO JEU D'ECHEC
+
 struct piece {
     team: entier
     class: string
