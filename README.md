@@ -33,8 +33,25 @@ Elle est egalement appelée dans le code en C lors de la visualisation du platea
 La fonction getPos permet de retrouver la position d'une piece sur l'échiquier
 ### Complexité
 
-Le projet est décomposé en 2 complexité.
-- Complexité quadratique lors du parcours du plateau, qui est un tableau a 2 dimentions (8x8)
-- Complexité linéaire pour la pluspart des autres fonctions
+initiateBoard : parcours de tableau à deux dimension : complexité quadratique
 
--La complexité de l'IA est constante
+getPos : parcours de tableau à deux dimension : complexité quadratique
+
+Move : complexité lineaire qui appele des fonctions a complexité quadratique : compléxité quadratique
+
+checkMove : parcours de tableau à deux dimension : complexité quadratique
+
+buildBoard : pour chaque element d'un tableau a  deux dimension on appelle la fonction checkMove qui a ne complexité quadratique : complexité cubique
+
+chosePos : complexité lineaire
+
+checkWin : parcours de tableau à deux dimension : complexité quadratique
+
+main : complexité lineaire qui appele toutes les fonctions du programme --> la complexité la plus haute est cubique : complexité cubique
+
+
+=== fonction d'IA non implementé ===
+
+countScore : parcours de tableau à deux dimension : complexité quadratique
+
+eval : Pour chaque case d'un tableau on verifie que chaque mouvement vers les autres cases du plateau est possible : complexité cubique
